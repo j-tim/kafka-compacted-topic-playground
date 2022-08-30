@@ -1,0 +1,29 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: streams-application
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    streams:
+      application-id: ${spring.application.name}
+      bootstrap-servers: ${spring.kafka.bootstrap-servers}
+      # This setting is here to don't wait until the buffer is full
+      cache-max-size-buffering: 0
+      properties:
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+
+# Open up all Spring Boot Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
