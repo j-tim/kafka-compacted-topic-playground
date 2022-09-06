@@ -1,0 +1,49 @@
+version: '3.7'
+
+# This docker-compose file contains all the monitoring setup.
+# To run the stack with monitoring: docker-compose -f docker-compose.yml -f docker-compose-monitoring.yml up -d
+
+services:
+
+  kafka:
+    ports:
+      - 1234:1234
+    environment:
+      JMX_PORT: 9999
+      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka -Dcom.sun.management.jmxremote.rmi.port=9999
+      EXTRA_ARGS: -javaagent:/usr/share/jmx-exporter/jmx_prometheus_javaagent-0.17.0.jar=1234:/usr/share/jmx-exporter/kafka_broker.yml
+
+    volumes:
+      - ${PWD}/monitoring/jmx-exporter/:/usr/share/jmx-exporter
+
+  # https://hub.docker.com/r/grafana/grafana
+  # http://localhost:3000
+  grafana:
+    image: grafana/grafana:7.5.15
+    container_name: grafana
+    environment:
+      TZ: ${TZ}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+    ports:
+      - 3000:3000
+    volumes:
+      - ${PWD}/monitoring/grafana/provisioning/datasources/grafana-datasource.yml:/etc/grafana/provisioning/datasources/grafana-datasource.yml
+      - ${PWD}/monitoring/grafana/provisioning/dashboards/grafana-dashboard.yml:/etc/grafana/provisioning/dashboards/grafana-dashboard.yml
+      - ${PWD}/monitoring/grafana/dashboards:/etc/grafana/dashboards
+    depends_on:
+      - prometheus
+
+  # https://hub.docker.com/r/prom/prometheus
+  # http://localhost:9090
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    container_name: prometheus
+    environment:
+      TZ: ${TZ}
+    ports:
+      - 9090:9090
+    volumes:
+      -  ${PWD}/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml

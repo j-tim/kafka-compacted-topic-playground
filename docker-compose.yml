@@ -11,6 +11,7 @@ services:
     image: confluentinc/cp-kafka:${CONFLUENT_PLATFORM_VERSION}
     container_name: kafka
     hostname: kafka
+    restart: on-failure
     environment:
       # KAFKA_ADVERTISED_LISTENERS: comma-separated list of listeners with the host/ip and port.
       # This is the metadata that’s passed back to clients.
