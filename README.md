@@ -7,8 +7,6 @@
 
 ## Use cases?
 
-Example: 
-
 It makes sense to store only the latest salary for each employee rather than the historical data for a limited period of time.
 
 ## Topic retention
@@ -70,17 +68,62 @@ The compaction is done:
 
 ## Configuration
 
-### Topic
+### Topic related settings
 
-`log.cleanup.policy=compact`
-* used to enable log cleaning on a particular topic
+* `cleanup.policy`
+  * Specifies the retention policy to use on old log segments
+  * `compact`: will enable log compaction on the topic
+  * Default value: `delete`
+  * [Confluent Documentation](https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html#topicconfigs_cleanup.policy)
 
-`min.compaction.lag.ms`
-* used to guarantee the minimum length of time must pass after a message is written before it could be compacted
-* it provides a lower bound on how long each message will remain in the (uncompacted) head.
-* used to guarantee the maximum delay between the time a message is written and the time the message becomes eligible for compaction.
+Topics are divided into partitions.
+Partitions are divided on the broker into segments
 
-### Broker
+New segments are created in Kafka when:
+* `segment.ms`:
+  * Controls the period of time after which Kafka will force the log to roll even if the segment file isn't full to ensure that retention can delete or compact old data.
+  * Default value: 7 days (`604800000` ms)
+  * [Confluent Documentation](https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html#topicconfigs_segment.ms)
+
+* `segment.bytes`:
+  * Controls the segment file size for the log
+  * Default value: 1 GB (`1073741824` bytes)
+  * When your segment size become bigger than this value, Kafka will create a new segment.
+  * [Confluent Documentation](https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html#topicconfigs_segment.bytes)
+
+* `delete.retention.ms`:
+  * Controls the amount of time to retain delete tombstone markers for log compacted topics.
+  * This setting also gives a bound on the time in which a consumer must complete a read if they begin from offset 0 to ensure that they get a valid snapshot of the final stage (otherwise delete tombstones may be collected before they complete their scan).
+  * Default value: 1 day (`86400000` ms)
+  * [Confluent Documentation](https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html#topicconfigs_delete.retention.ms)
+
+* `min.cleanable.dirty.ratio`:
+  * Controls how frequently the log compactor will attempt to clean the log
+  * By default, Kafka will avoid cleaning a log where more than 50% of the log has been compacted.
+  * This ratio bounds the maximum space wasted in the log by duplicates (at 50% at most 50% of the log could be duplicates)
+  * Higher ratio will mean fewer, more efficient cleanings but will mean more wasted space in the log
+  * Depends on configuration: 
+    * `cleanup.policy`
+    * Required settings: `compact`
+  * Related to configuration:
+    * `max.compaction.lag.ms`:
+    * `min.compaction.lag.ms`: 
+  * Default value: `0.5`
+  * [Confluent Documentation](https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html#topicconfigs_min.cleanable.dirty.ratio)
+
+* `max.compaction.lag.ms`
+  * Controls the maximum time a message will remain ineligible for compaction in the log
+  * Default value: 9223372036854775807
+  * [Confluent Documentation](https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html#topicconfigs_max.compaction.lag.ms)
+
+* `min.compaction.lag.ms`
+  * used to guarantee the minimum length of time must pass after a message is written before it could be compacted
+  * it provides a lower bound on how long each message will remain in the (uncompacted) head.
+  * used to guarantee the maximum delay between the time a message is written and the time the message becomes eligible for compaction.
+  * Default value: `0`
+  * [Confluent Documentation](https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html#topicconfigs_min.compaction.lag.ms)
+
+### Broker related settings
 
 `log.cleanup.policy`
 
@@ -95,11 +138,14 @@ The compaction is done:
 * This can be used to prevent log with low produce rate from remaining ineligible for compaction for an unbounded duration.
 * If not set, logs that do not exceed `min.cleanable.dirty.ratio` are not compacted.
 
-compaction deadline is not a hard guarantee since it is still subjected to the availability of log cleaner threads and the actual compaction time.
+### Kafka Broker metrics compaction
+
+Compaction deadline is not a hard guarantee since it is still subjected to the availability of log cleaner threads and the actual compaction time.
 You will want to monitor metrics:
+
 * `uncleanable-partitions-count`
 * `max-clean-time-secs`
-* `max-compaction-delay-secs` .
+* `max-compaction-delay-secs`
 
 ### What is log compaction not solving?
 
@@ -226,7 +272,7 @@ watch ls -l
 ```
 
 
-## Cleanup policy with both compact and delete 
+## Cleanup policy both compact and delete 
 
 ```
 kafka-topics --bootstrap-server localhost:9092 --describe \
@@ -243,3 +289,17 @@ kafka-configs --bootstrap-server localhost:9092 --alter --entity-type topics --e
 
 * [Confluent Forum - Cleanup Policy of compact AND delete](https://forum.confluent.io/t/cleanup-policy-of-compact-and-delete/868/)
 * [KAFKA-40150 - Change cleanup.policy config to accept a list of valid policies](https://issues.apache.org/jira/browse/KAFKA-4015)
+
+## Docker 
+
+Start:
+
+```
+docker-compose -f docker-compose.yml -f docker-compose-monitoring.yml up -d
+```
+
+Stop:
+
+```
+docker-compose -f docker-compose.yml -f docker-compose-monitoring.yml down -v
+```
