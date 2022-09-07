@@ -30,9 +30,9 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ${PWD}/monitoring/grafana/provisioning/datasources/grafana-datasource.yml:/etc/grafana/provisioning/datasources/grafana-datasource.yml
-      - ${PWD}/monitoring/grafana/provisioning/dashboards/grafana-dashboard.yml:/etc/grafana/provisioning/dashboards/grafana-dashboard.yml
-      - ${PWD}/monitoring/grafana/dashboards:/etc/grafana/dashboards
+      - ./monitoring/grafana/provisioning/datasources/grafana-datasource.yml:/etc/grafana/provisioning/datasources/grafana-datasource.yml
+      - ./monitoring/grafana/provisioning/dashboards/grafana-dashboard.yml:/etc/grafana/provisioning/dashboards/grafana-dashboard.yml
+      - ./monitoring/grafana/dashboards:/etc/grafana/dashboards
     depends_on:
       - prometheus
 
@@ -46,4 +46,4 @@ services:
     ports:
       - 9090:9090
     volumes:
-      -  ${PWD}/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      -  ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml

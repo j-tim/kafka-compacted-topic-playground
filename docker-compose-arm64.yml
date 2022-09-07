@@ -1,0 +1,15 @@
+# This docker-compose file contains all Kafka setup to run on a M1 Apple Macbook (ARM64)
+
+version: '3.7'
+
+services:
+
+  kafka:
+    image: confluentinc/cp-kafka:${CONFLUENT_PLATFORM_VERSION}.arm64
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:${CONFLUENT_PLATFORM_VERSION}.arm64
+
+  kafkacat:
+    image: confluentinc/cp-kafkacat:${CONFLUENT_PLATFORM_VERSION}.arm64
+

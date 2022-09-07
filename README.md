@@ -283,6 +283,7 @@ Topic: stock-quotes-compact-and-delete  TopicId: 1lgmcSQiSG-Yshps0d_jpA Partitio
 Topic: stock-quotes-compact-and-delete  Partition: 0    Leader: 1001    Replicas: 1001  Isr: 1001
 
 
+
 ```
 kafka-configs --bootstrap-server localhost:9092 --alter --entity-type topics --entity-name stock-quotes --add-config cleanup.policy='[compact,delete]'
 ```
@@ -290,12 +291,13 @@ kafka-configs --bootstrap-server localhost:9092 --alter --entity-type topics --e
 * [Confluent Forum - Cleanup Policy of compact AND delete](https://forum.confluent.io/t/cleanup-policy-of-compact-and-delete/868/)
 * [KAFKA-40150 - Change cleanup.policy config to accept a list of valid policies](https://issues.apache.org/jira/browse/KAFKA-4015)
 
-## Docker 
+## Docker
 
 Start:
 
 ```
 docker-compose -f docker-compose.yml -f docker-compose-monitoring.yml up -d
+docker compose up -d
 ```
 
 Stop:
@@ -303,3 +305,44 @@ Stop:
 ```
 docker-compose -f docker-compose.yml -f docker-compose-monitoring.yml down -v
 ```
+docker compose down -v
+```
+
+Including monitoring setup:
+
+```
+docker compose -f docker-compose.yml -f docker-compose-monitoring.yml up -d
+```
+
+```
+docker compose -f docker-compose.yml -f docker-compose-monitoring.yml down -v
+```
+
+
+### Apple M1 Macbook (ARM64)
+
+For Apple M1 Macbook (ARM64): 
+
+Start
+
+```
+docker compose -f docker-compose.yml -f docker-compose-arm64.yml up -d
+```
+
+Stop:
+
+```
+docker compose -f docker-compose.yml -f docker-compose-arm64.yml down -v
+```
+
+Including monitoring:
+
+```
+docker compose -f docker-compose.yml -f docker-compose-arm64.yml -f docker-compose-monitoring.yml up -d
+```
+
+
+```
+docker compose -f docker-compose.yml -f docker-compose-arm64.yml -f docker-compose-monitoring.yml down -v
+```
+
