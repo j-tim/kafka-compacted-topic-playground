@@ -12,9 +12,8 @@ services:
       JMX_PORT: 9999
       KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka -Dcom.sun.management.jmxremote.rmi.port=9999
       EXTRA_ARGS: -javaagent:/usr/share/jmx-exporter/jmx_prometheus_javaagent-0.17.0.jar=1234:/usr/share/jmx-exporter/kafka_broker.yml
-
     volumes:
-      - ${PWD}/monitoring/jmx-exporter/:/usr/share/jmx-exporter
+      - ./monitoring/jmx-exporter/:/usr/share/jmx-exporter
 
   # https://hub.docker.com/r/grafana/grafana
   # http://localhost:3000
