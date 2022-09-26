@@ -194,6 +194,7 @@ kafka-console-producer --bootstrap-server localhost:9092 \
                        --property key.separator=,
 ```
 
+```
 AAPL, price=900
 INGB, price=10
 AMZN, price=2500
@@ -205,6 +206,7 @@ AMZN, price=2520
 INGB, price=8
 
 INGB, null
+```
 
 ```
 kafka-console-consumer --bootstrap-server localhost:9092 \
