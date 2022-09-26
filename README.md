@@ -326,7 +326,7 @@ docker compose -f docker-compose.yml -f docker-compose-monitoring.yml down -v
 
 For Apple M1 Macbook (ARM64): 
 
-Start
+Start:
 
 ```
 docker compose -f docker-compose.yml -f docker-compose-arm64.yml up -d
