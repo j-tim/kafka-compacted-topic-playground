@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class MessageConsumer {
 
-    public final static String MESSAGES_TOPIC_NAME = "messages-topic";
+    public final static String MESSAGES_TOPIC_NAME = "topic-compact-bounded-keyspace";
 
     @KafkaListener(topics = MESSAGES_TOPIC_NAME)
     public void on(ConsumerRecord<String, String> consumerRecord) {
