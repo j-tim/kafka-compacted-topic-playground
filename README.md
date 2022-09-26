@@ -305,6 +305,8 @@ Stop:
 ```
 docker-compose -f docker-compose.yml -f docker-compose-monitoring.yml down -v
 ```
+
+```
 docker compose down -v
 ```
 
@@ -317,7 +319,6 @@ docker compose -f docker-compose.yml -f docker-compose-monitoring.yml up -d
 ```
 docker compose -f docker-compose.yml -f docker-compose-monitoring.yml down -v
 ```
-
 
 ### Apple M1 Macbook (ARM64)
 
